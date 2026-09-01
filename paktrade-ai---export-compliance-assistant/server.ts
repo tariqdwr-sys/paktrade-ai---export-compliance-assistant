@@ -13,7 +13,7 @@ import {
 } from './src/data/tradeData';
 import { Currency, DutyCalculationResult, ShipmentType } from './src/types';
 
-export default app;
+
 
 const app = express();
 const PORT = 3000;
