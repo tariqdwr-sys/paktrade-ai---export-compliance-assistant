@@ -1,0 +1,6 @@
+{
+  "name": "PakTrade AI - Export Compliance Assistant",
+  "description": "Cross-border trade and customs compliance assistant for Pakistani exporters shipping to the US, UK, EU, UAE, Canada, Australia and worldwide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
