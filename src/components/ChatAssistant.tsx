@@ -64,10 +64,21 @@ You can also click any sample scenario below to generate an instant customs clea
     },
   ]);
 
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
 
+  // Scroll ONLY the internal chat messages container, never the window or whole page
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   }, [messages, isLoading]);
 
   const handleSendMessage = async (textToSend?: string) => {
@@ -468,9 +479,9 @@ You can also click any sample scenario below to generate an instant customs clea
         </div>
 
         {/* Right Column: Interactive Chat Interface */}
-        <div className="lg:col-span-8 flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-md overflow-hidden min-h-[640px]">
+        <div className="lg:col-span-8 flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-md overflow-hidden min-h-[640px] max-h-[780px] lg:h-[780px]">
           {/* Chat Header */}
-          <div className="bg-slate-50/90 border-b border-slate-200/80 p-4 flex justify-between items-center">
+          <div className="bg-slate-50/90 border-b border-slate-200/80 p-4 flex justify-between items-center flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#006747] flex items-center justify-center text-white shadow-xs">
                 <Bot className="w-5 h-5" />
@@ -488,7 +499,7 @@ You can also click any sample scenario below to generate an instant customs clea
             </div>
 
             <button
-              onClick={() =>
+              onClick={() => {
                 setMessages([
                   {
                     id: 'reset-' + Date.now(),
@@ -496,8 +507,11 @@ You can also click any sample scenario below to generate an instant customs clea
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     text: 'Chat history cleared. How can PakTrade AI assist your export shipment today?',
                   },
-                ])
-              }
+                ]);
+                if (messagesContainerRef.current) {
+                  messagesContainerRef.current.scrollTop = 0;
+                }
+              }}
               className="text-slate-400 hover:text-slate-600 text-xs flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-slate-200/60 transition-all"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -506,7 +520,7 @@ You can also click any sample scenario below to generate an instant customs clea
           </div>
 
           {/* Chat Messages Body */}
-          <div className="flex-1 p-5 space-y-5 overflow-y-auto bg-slate-50/30">
+          <div ref={messagesContainerRef} className="flex-1 min-h-0 p-5 space-y-5 overflow-y-auto bg-slate-50/30">
             {messages.map((msg) => {
               const isAi = msg.sender === 'ai';
               return (
@@ -620,11 +634,10 @@ You can also click any sample scenario below to generate an instant customs clea
               </div>
             )}
 
-            <div ref={chatEndRef} />
           </div>
 
           {/* Chat Input Bar */}
-          <div className="p-4 bg-white border-t border-slate-200/80">
+          <div className="p-4 bg-white border-t border-slate-200/80 flex-shrink-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
